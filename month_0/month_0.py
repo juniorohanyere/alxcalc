@@ -9,6 +9,7 @@ class Month_0:
     def __init__(self, master=None, args=None):
         self.master = master
         self.args = args
+        self.main()
 
     def main(self):
         print(self.to_dict())
@@ -79,15 +80,42 @@ class Month_0:
                                     value.update([(t_key, t_value)])
                                 dictionary.update([(key, value)])
                             else:
-                                print("Unexpected error occurred")
+                                print()
+                                print("DEBUGGER 0")
                     else:
                         value = project[1]
                         dictionary.update([(key, value)])
 
                 return (dictionary)
 
-    def validate(self):
-        pass
+    def cal_task(self, task, **kwargs):
+        dictionary = self.to_dict()
+        for key, value in dictionary.items():
+            if isinstance(value, dict) == True:
+                # check for NULL values
+                t_dict = value
+                for t_key, t_value in t_dict.items():
+                    if t_key == task and isinstance(t_value, dict) == True:
+                        c_dict = t_value
+                        for c_key, c_value in c_dict.items():
+                            if c_value == '':
+                                print()
+                                print("DEBUGGER 1")
+                                sys.exit()
 
-    def parser(self):
-        pass
+                # get the values after successful NULL value checkup
+                c_list = list(c_dict)
+                for i in range(len(c_list)):
+                    if i == 0:
+                        deadline = int(c_list[i])
+                    else:
+                        check = int(c_list[i]) # and some crazy calculations :)
+                        cal += cal + check
+
+                if (int(deadline) <= 0 or int(deadline) > 3 or int(check_0) < 0
+                        or int(check_0) > 1 or int(check_1) < 0 or
+                        int(check_1) > 1 or int(check_2) < 0 or
+                        int(check_2) > 1):
+                    print()
+                    print("DEBUGGER 3")
+                    sys.exit()
