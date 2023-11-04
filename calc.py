@@ -5,7 +5,7 @@
 import sys
 
 
-class Month_0:
+class Calc:
     """Defines methods to handle computation and calculation of score for month
     0.
     """
