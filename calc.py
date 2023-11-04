@@ -50,7 +50,8 @@ class Parser:
                     if line.startswith("#"):
                         pass
                     elif line == "\n":
-                        m += [n]
+                        if n != []:
+                            m += [n]
                         n = []
                     else:
                         n += [line.strip()]
@@ -59,7 +60,7 @@ class Parser:
                 # the aim now is to generate a fine dictionary to access the
                 # data
                 dictionary = {}
-                for i in range(1, len(m)):
+                for i in range(len(m)):
                     project = m[i][0].split("==")
                     key = project[0]    # project key
                     if project[1] == '':
@@ -151,7 +152,10 @@ class Task(Parser):
     def __init__(self, filename=None, args=None):
         super().__init__()
 
-    def cal_task(self, project, task):
+        if self.args[5] == "-t" and isdigit(self.args[6]) is True:
+            self.task = "task_" + self.args[6]
+
+    def cal_task(self):
         """Calculate the score for a given task.
 
         Args:
@@ -194,11 +198,11 @@ class Task(Parser):
         my_dict = to_dict()     # dictionary for learner's entry
         dictionary = json_to_dict()     # predefined dictionary (full values)
 
-        deadline = int(my_dict[project][task]["deadline"])
+        deadline = int(my_dict[self.project][self.task]["deadline"])
         check = 0
         full_check = 0
 
-        for key, value in my_dict[project][task].items():
+        for key, value in my_dict[self.project][self.task].items():
             if key == "deadline":
                 pass
             else:
@@ -208,14 +212,16 @@ class Task(Parser):
                     sys.exit()
                 check += int(value)
 
-        for key, value in dictionary[project][task][mandatory].items():
+        for key, value in dictionary[self.project][self.task]["mandatory"]. \
+                items():
             if value == '' or int(value) < 0 or int(value) > 1:
                 print()
                 print("DEBUGGER 7: Corrupt JSON file")
                 sys.exit()
             full_check += value
         try:
-            for key, value in dictionary[project][task][optional].items():
+            for key, value in \
+                    dictionary[self.project][self.task]['optional'].items():
                 if value == '' or int(value) < 0 or int(value) > 1:
                     print()
                     print("DEBUGGER 8: Corrupt JSON file")
