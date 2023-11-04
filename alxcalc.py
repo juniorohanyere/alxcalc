@@ -3,9 +3,10 @@
 """
 
 import sys
+import os
 import subprocess
 
-from month_0 import month_0
+from calc import Parser
 
 
 def main():
@@ -16,9 +17,17 @@ def main():
         print("Usage: {} <option> <value>".format(sys.argv[0]))
         sys.exit()
 
-    subprocess.run('editor month_0/month_0', shell=True, text=True)
+    filename = 'month_{}/month_{}'.format(sys.argv[2], sys.argv[2])
 
-    m0 = month_0.Month_0(args=sys.argv)
+    try:
+        os.stat(filename)
+    except (FileNotFoundError, IsADirectoryError):
+        print("DEBUGGER 4: File Not Found")
+        sys.exit()
+
+    subprocess.run(f'editor {filename}', shell=True, text=True)
+
+    m0 = Parser(filename=filename, args=sys.argv)
 
 
 if __name__ == '__main__':

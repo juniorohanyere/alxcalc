@@ -3,18 +3,19 @@
 '''
 
 import sys
+import json
 
 
-class Calc:
-    """Defines methods to handle computation and calculation of score for month
-    0.
+class Parser:
+    """Defines methods to handle computation and calculation of score for a
+    given month
     """
 
-    def __init__(self, master=None, args=None):
+    def __init__(self, filename=None, args=None):
         """Initializer.
         """
 
-        self.master = master
+        self.filename = filename
         self.args = args
         self.main()
 
@@ -34,7 +35,7 @@ class Calc:
         if self.args[1] == "-M":
             if self.args[2] == "0":
                 try:
-                    with open("month_0/month_0", "r") as file:
+                    with open(self.filename, "r") as file:
                         lines = file.readlines()
 
                 except (FileNotFoundError, IsADirectoryError):
@@ -72,25 +73,25 @@ class Calc:
                                     t_value = {}    # task value
                                 else:
                                     t_value = task[1]
-                                    if isinstance(value, str) == False:
+                                    if isinstance(value, str) is False:
                                         value.update([(t_key, t_value)])
                                     dictionary.update([(key, value)])
                             elif tmp.startswith("deadline"):
                                 deadline = tmp.split("==")
                                 d_key = deadline[0]     # deadline key
                                 d_value = deadline[1]   # deadline value
-                                if isinstance(t_value, str) == False:
+                                if isinstance(t_value, str) is False:
                                     t_value.update([(d_key, d_value)])
-                                if isinstance(value, str) == False:
+                                if isinstance(value, str) is False:
                                     value.update([(t_key, t_value)])
                                 dictionary.update([(key, value)])
                             elif tmp.startswith("check_"):
                                 check = tmp.split("==")
                                 c_key = check[0]    # check key
                                 c_value = check[1]  # check value
-                                if isinstance(t_value, str) == False:
+                                if isinstance(t_value, str) is False:
                                     t_value.update([(c_key, c_value)])
-                                if isinstance(value, str) == False:
+                                if isinstance(value, str) is False:
                                     value.update([(t_key, t_value)])
                                 dictionary.update([(key, value)])
                             else:
@@ -102,7 +103,55 @@ class Calc:
 
                 return (dictionary)
 
-    def cal_task(self, task):
+    def json_to_dict(self):
+        filename = self.filename + '.json'
+
+        try:
+            with open(filename, 'r') as file:
+                rfile = file.read()
+        except (FileNotFoundError, IsADirectoryError):
+            print("DEBUGGER 5: file not found")
+            sys.exit()
+
+        dictionary = json.loads(rfile)
+
+        return dictionary
+
+
+class Month:
+    pass
+
+
+class Project:
+    """
+        mand_pnt = 0    # obtained mandatory points
+        opt_pnt = 0     # obtained optional points
+        pnt = 0     # total obtained points
+
+        total_mand_pnt = 0  # full mandatory points
+        total_opt_pnt = 0   # full optional points
+        total_pnt = 0   # total full points
+
+        for key, value in dictionary[project][task][mandatory].items():
+            total_mand_pnt += int(value)
+
+        try:
+            for key, value in dictionary[project][task][optional].items():
+                total_opt_pnt += int(value)
+        except KeyError:
+            total_opt_pnt = 0
+
+        total_pnt = total_mand_pnt + total_opt_pnt
+    """
+
+    pass
+
+
+class Task(Parser):
+    def __init__(self, filename=None, args=None):
+        super().__init__()
+
+    def cal_task(self, project, task):
         """Calculate the score for a given task.
 
         Args:
@@ -110,14 +159,15 @@ class Calc:
                         This should be something like "task_0", "task_1", etc.
         """
 
+        """
         dictionary = self.to_dict()
 
         for key, value in dictionary.items():
-            if isinstance(value, dict) == True:
+            if isinstance(value, dict) is True:
                 # check for NULL values
                 t_dict = value
                 for t_key, t_value in t_dict.items():
-                    if t_key == task and isinstance(t_value, dict) == True:
+                    if t_key == task and isinstance(t_value, dict) is True:
                         c_dict = t_value
                         for c_key, c_value in c_dict.items():
                             if c_value == '':
@@ -127,17 +177,60 @@ class Calc:
 
                 # get the values after successful NULL value checkup
                 c_list = list(c_dict)
+                my_dict = json_to_dict()
                 for i in range(len(c_list)):
                     if i == 0:
                         deadline = int(c_list[i])
                     else:
-                        check = int(c_list[i]) # and some crazy calculations :)
-                        cal += cal + check
+                        check = int(c_list[i])  # time to read some json file
 
-                if (int(deadline) <= 0 or int(deadline) > 3 or int(check_0) < 0
-                        or int(check_0) > 1 or int(check_1) < 0 or
-                        int(check_1) > 1 or int(check_2) < 0 or
-                        int(check_2) > 1):
+                    if (deadline < 0 or deadline > 2 or check < 0 or
+                            check > 1):
+                        print()
+                        print("DEBUGGER 3")
+                        sys.exit()
+        """
+
+        my_dict = to_dict()     # dictionary for learner's entry
+        dictionary = json_to_dict()     # predefined dictionary (full values)
+
+        deadline = int(my_dict[project][task]["deadline"])
+        check = 0
+        full_check = 0
+
+        for key, value in my_dict[project][task].items():
+            if key == "deadline":
+                pass
+            else:
+                if value == '' or int(value) < 0 or int(value) > 1:
                     print()
-                    print("DEBUGGER 3")
+                    print("DEBUGGER 6: Empty Value.")
                     sys.exit()
+                check += int(value)
+
+        for key, value in dictionary[project][task][mandatory].items():
+            if value == '' or int(value) < 0 or int(value) > 1:
+                print()
+                print("DEBUGGER 7: Corrupt JSON file")
+                sys.exit()
+            full_check += value
+        try:
+            for key, value in dictionary[project][task][optional].items():
+                if value == '' or int(value) < 0 or int(value) > 1:
+                    print()
+                    print("DEBUGGER 8: Corrupt JSON file")
+                    sys.exit()
+                full_check += value
+        except KeyError:
+            print()
+            print("DEBUGGER 9.")
+            sys.exit()
+
+        if deadline == 0:   # before end of first deadline (100%)
+            task = (check / full_check) * 100
+        elif deadline == 1:     # before end of second deadline (65%)
+            task = (check / full_check) * 65
+        elif deadline == 2:     # after second deadline (50%)
+            task = (check / full_check) * 50
+
+        return task
