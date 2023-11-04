@@ -1,20 +1,34 @@
 #!/usr/bin/env python3
-'''handles the code base for month 0 of the alx programme
+'''Handles the code base for month 0 of the alx programme.
 '''
 
 import sys
 
 
 class Month_0:
+    """Defines methods to handle computation and calculation of score for month
+    0.
+    """
+
     def __init__(self, master=None, args=None):
+        """Initializer.
+        """
+
         self.master = master
         self.args = args
         self.main()
 
     def main(self):
+        """Main method for Month_0 class.
+        """
+
         print(self.to_dict())
 
     def to_dict(self):
+        """Translates the content read from a particular file to a python
+        dictionary for fine access.
+        """
+
         dictionary = {}
 
         if self.args[1] == "-M":
@@ -88,8 +102,16 @@ class Month_0:
 
                 return (dictionary)
 
-    def cal_task(self, task, **kwargs):
+    def cal_task(self, task):
+        """Calculate the score for a given task.
+
+        Args:
+            task (str): Defines the task to calculate the score for.
+                        This should be something like "task_0", "task_1", etc.
+        """
+
         dictionary = self.to_dict()
+
         for key, value in dictionary.items():
             if isinstance(value, dict) == True:
                 # check for NULL values
