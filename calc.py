@@ -6,9 +6,9 @@ import sys
 import json
 
 
-class Parser:
+class Month:
     """Defines methods to handle computation and calculation of score for a
-    given month
+    given month. This is the base class
     """
 
     def __init__(self, filename=None, args=None):
@@ -17,13 +17,11 @@ class Parser:
 
         self.filename = filename
         self.args = args
-        self.main()
 
-    def main(self):
-        """Main method for Month_0 class.
-        """
+        self.month = "month_" + self.args[2]
 
-        print(self.to_dict())
+        # if len(self.args) == 3 and self.args[1] == "-m":
+        #    self.cal_month()
 
     def to_dict(self):
         """Translates the content read from a particular file to a python
@@ -32,77 +30,75 @@ class Parser:
 
         dictionary = {}
 
-        if self.args[1] == "-M":
-            if self.args[2] == "0":
-                try:
-                    with open(self.filename, "r") as file:
-                        lines = file.readlines()
+        try:
+            with open(self.filename, "r") as file:
+                lines = file.readlines()
 
-                except (FileNotFoundError, IsADirectoryError):
-                    print("File Not Found")
-                    sys.exit()
+        except (FileNotFoundError, IsADirectoryError):
+            print("File Not Found")
+            sys.exit()
 
-                m = []
+        m = []
+        n = []
+        for line in lines:
+            # split up the project into lines
+            # getting rid of lines beginning with '#' as comments
+            if line.startswith("#"):
+                pass
+            elif line == "\n":
+                if n != []:
+                    m += [n]
                 n = []
-                for line in lines:
-                    # split up the project into lines
-                    # getting rid of lines beginning with '#' as comments
-                    if line.startswith("#"):
-                        pass
-                    elif line == "\n":
-                        if n != []:
-                            m += [n]
-                        n = []
-                    else:
-                        n += [line.strip()]
-                m += [n]
+            else:
+                n += [line.strip()]
+        m += [n]
 
-                # the aim now is to generate a fine dictionary to access the
-                # data
-                dictionary = {}
-                for i in range(len(m)):
-                    project = m[i][0].split("==")
-                    key = project[0]    # project key
-                    if project[1] == '':
-                        value = {}  # project value
-                        for j in range(1, len(m[i])):
-                            tmp = m[i][j]
-                            if tmp.startswith("task_"):
-                                task = tmp.split("==")
-                                t_key = task[0]     # task key
-                                if task[1] == '':
-                                    t_value = {}    # task value
-                                else:
-                                    t_value = task[1]
-                                    if isinstance(value, str) is False:
-                                        value.update([(t_key, t_value)])
-                                    dictionary.update([(key, value)])
-                            elif tmp.startswith("deadline"):
-                                deadline = tmp.split("==")
-                                d_key = deadline[0]     # deadline key
-                                d_value = deadline[1]   # deadline value
-                                if isinstance(t_value, str) is False:
-                                    t_value.update([(d_key, d_value)])
-                                if isinstance(value, str) is False:
-                                    value.update([(t_key, t_value)])
-                                dictionary.update([(key, value)])
-                            elif tmp.startswith("check_"):
-                                check = tmp.split("==")
-                                c_key = check[0]    # check key
-                                c_value = check[1]  # check value
-                                if isinstance(t_value, str) is False:
-                                    t_value.update([(c_key, c_value)])
-                                if isinstance(value, str) is False:
-                                    value.update([(t_key, t_value)])
-                                dictionary.update([(key, value)])
-                            else:
-                                print()
-                                print("DEBUGGER 0")
-                    else:
-                        value = project[1]
+        # the aim now is to generate a fine dictionary to access the
+        # data
+        dictionary = {}
+        for i in range(len(m)):
+            project = m[i][0].split("==")
+            key = project[0]    # project key
+            if project[1] == '':
+                value = {}  # project value
+                for j in range(1, len(m[i])):
+                    tmp = m[i][j]
+                    if tmp.startswith("task_"):
+                        task = tmp.split("==")
+                        t_key = task[0]     # task key
+                        if task[1] == '':
+                            t_value = {}    # task value
+                        else:
+                            t_value = task[1]
+                            if isinstance(value, str) is False:
+                                value.update([(t_key, t_value)])
+                            dictionary.update([(key, value)])
+                    elif tmp.startswith("deadline"):
+                        deadline = tmp.split("==")
+                        d_key = deadline[0]     # deadline key
+                        d_value = deadline[1]   # deadline value
+                        if isinstance(t_value, str) is False:
+                            t_value.update([(d_key, d_value)])
+                        if isinstance(value, str) is False:
+                            value.update([(t_key, t_value)])
                         dictionary.update([(key, value)])
+                    elif tmp.startswith("check_"):
+                        check = tmp.split("==")
+                        c_key = check[0]    # check key
+                        c_value = check[1]  # check value
+                        if isinstance(t_value, str) is False:
+                            t_value.update([(c_key, c_value)])
+                        if isinstance(value, str) is False:
+                            value.update([(t_key, t_value)])
+                        dictionary.update([(key, value)])
+                    else:
+                        print()
+                        print("DEBUGGER 0")
+            else:
+                value = project[1]
+                dictionary.update([(key, value)])
 
-                return (dictionary)
+        return (dictionary)
 
     def json_to_dict(self):
         filename = self.filename + '.json'
@@ -119,11 +115,12 @@ class Parser:
         return dictionary
 
 
-class Month:
-    pass
+class Project(Month):
+    def __init__(self, filename=None, args=None):
+        if len(args) >= 5 and args[3] == '-p':
+            super().__init__(filename, args)
+            self.project = self.project_id()
 
-
-class Project:
     """
         mand_pnt = 0    # obtained mandatory points
         opt_pnt = 0     # obtained optional points
@@ -145,15 +142,41 @@ class Project:
         total_pnt = total_mand_pnt + total_opt_pnt
     """
 
-    pass
+    def project_id(self):
+        dictionary = self.json_to_dict()
+
+        for key, value in dictionary.items():
+            for k, v in value.items():
+                if k == 'name' and v == self.args[4]:
+                    # ==> DEBUGGER
+                    print(key)
+                    # <==
+
+                    return key
+
+        print("Error: No such project for month {}: {}".
+              format(self.month, self.args[4]))
 
 
-class Task(Parser):
+class Task(Project):
     def __init__(self, filename=None, args=None):
-        super().__init__()
+        if len(args) == 7 and args[5] == '-t':
+            super().__init__(filename, args)
 
-        if self.args[5] == "-t" and isdigit(self.args[6]) is True:
-            self.task = "task_" + self.args[6]
+            self.args = args
+
+            if self.args[5] == "-t":
+                if self.args[6].isdigit() is False:
+                    print("Error: Invalid input value for {}: {}".
+                          format(self.args[5], self.args[6]))
+                    sys.exit()
+
+                self.task = "task_" + self.args[6]
+
+class Calc(Task):
+    def __init__(self, filename=None, args=None):
+        super().__init__(filename, args)
+        self.cal_task()
 
     def cal_task(self):
         """Calculate the score for a given task.
@@ -163,40 +186,8 @@ class Task(Parser):
                         This should be something like "task_0", "task_1", etc.
         """
 
-        """
-        dictionary = self.to_dict()
-
-        for key, value in dictionary.items():
-            if isinstance(value, dict) is True:
-                # check for NULL values
-                t_dict = value
-                for t_key, t_value in t_dict.items():
-                    if t_key == task and isinstance(t_value, dict) is True:
-                        c_dict = t_value
-                        for c_key, c_value in c_dict.items():
-                            if c_value == '':
-                                print()
-                                print("DEBUGGER 1")
-                                sys.exit()
-
-                # get the values after successful NULL value checkup
-                c_list = list(c_dict)
-                my_dict = json_to_dict()
-                for i in range(len(c_list)):
-                    if i == 0:
-                        deadline = int(c_list[i])
-                    else:
-                        check = int(c_list[i])  # time to read some json file
-
-                    if (deadline < 0 or deadline > 2 or check < 0 or
-                            check > 1):
-                        print()
-                        print("DEBUGGER 3")
-                        sys.exit()
-        """
-
-        my_dict = to_dict()     # dictionary for learner's entry
-        dictionary = json_to_dict()     # predefined dictionary (full values)
+        my_dict = self.to_dict()     # dictionary for learner's entry
+        dictionary = self.json_to_dict()     # predefined dictionary (full values)
 
         deadline = int(my_dict[self.project][self.task]["deadline"])
         check = 0
@@ -212,25 +203,15 @@ class Task(Parser):
                     sys.exit()
                 check += int(value)
 
-        for key, value in dictionary[self.project][self.task]["mandatory"]. \
-                items():
-            if value == '' or int(value) < 0 or int(value) > 1:
-                print()
-                print("DEBUGGER 7: Corrupt JSON file")
-                sys.exit()
-            full_check += value
+        length = len(dictionary[self.project][self.task]["mandatory"].items())
+        full_check = length
+
         try:
-            for key, value in \
-                    dictionary[self.project][self.task]['optional'].items():
-                if value == '' or int(value) < 0 or int(value) > 1:
-                    print()
-                    print("DEBUGGER 8: Corrupt JSON file")
-                    sys.exit()
-                full_check += value
+            length = len(dictionary[self.project][self.task]['optional'].
+                        items())
+            full_check += length
         except KeyError:
-            print()
-            print("DEBUGGER 9.")
-            sys.exit()
+            pass
 
         if deadline == 0:   # before end of first deadline (100%)
             task = (check / full_check) * 100
@@ -239,4 +220,20 @@ class Task(Parser):
         elif deadline == 2:     # after second deadline (50%)
             task = (check / full_check) * 50
 
+        # ==> DEBUGGER
+        print(check)
+        print(full_check)
+        print(task)
+        # <==
+
         return task
+
+    def cal_project(self):
+        pass
+
+    def cal_month(self):
+        """calculate and compute the sccore for a given month
+        """
+
+        print(self.to_dict())
+
