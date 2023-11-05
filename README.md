@@ -22,7 +22,9 @@ git clone https://github.com/juniorohanyere/alxcalc.git
 ./alxcalc -v    # display version number
 ```
 
-**Global Operations: ***Specify -r, -f or combination of both at the end of the line to perform global operations.*
+**Global Operations:**
+
+*Specify -r, -f or combination of both at the end of the line to perform global operations.*
 
 ```bash
 ./alxcalc -r    # reset values in input file to empty
