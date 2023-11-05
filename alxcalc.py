@@ -45,7 +45,6 @@ class Main:
 
         self.filename = 'month_{}/month_{}'.format(self.args[2], self.args[2])
 
-
     def main(self):
         """Entry point.
         """
