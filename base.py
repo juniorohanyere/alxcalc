@@ -54,46 +54,55 @@ class Base:
         for i in range(len(m)):
             project = m[i][0].split("==")
             key = project[0]    # project key
-            if project[1] == '':
-                value = {}  # project value
-                for j in range(1, len(m[i])):
-                    tmp = m[i][j]
-                    if tmp.startswith("task_"):
-                        task = tmp.split("==")
-                        t_key = task[0]     # task key
-                        if task[1] == '':
-                            t_value = {}    # task value
-                        else:
-                            t_value = task[1]
-                            if isinstance(value, str) is False:
-                                value.update([(t_key, t_value)])
-                            dictionary.update([(key, value)])
-                    elif tmp.startswith("deadline"):
-                        deadline = tmp.split("==")
-                        d_key = deadline[0]     # deadline key
-                        d_value = deadline[1]   # deadline value
-                        if isinstance(t_value, str) is False:
-                            t_value.update([(d_key, d_value)])
-                        if isinstance(value, str) is False:
-                            value.update([(t_key, t_value)])
-                        dictionary.update([(key, value)])
-                    elif tmp.startswith("check_"):
-                        check = tmp.split("==")
-                        c_key = check[0]    # check key
-                        c_value = check[1]  # check value
-                        if isinstance(t_value, str) is False:
-                            t_value.update([(c_key, c_value)])
-                        if isinstance(value, str) is False:
-                            value.update([(t_key, t_value)])
-                        dictionary.update([(key, value)])
-                    else:
-                        print()
-                        print("DEBUGGER 0")
-            else:
-                value = project[1]
+            value = {}  # prject value
+
+            s_key = "score"     # project score key
+            s_value = project[1]    # project score value
+
+            value.update([(s_key, s_value)])
+
+            for j in range(1, len(m[i])):
+                tmp = m[i][j]
+                if tmp.startswith("task_"):
+                    task = tmp.split("==")
+                    t_key = task[0]     # task key
+                    t_value = {}   # task value
+
+                    ts_key = "score"    # task score key
+                    ts_value = task[1]  # task score value
+
+                    t_value.update([(ts_key, ts_value)])
+
+                elif tmp.startswith("deadline"):
+                    deadline = tmp.split("==")
+
+                    d_key = deadline[0]     # deadline key
+                    d_value = deadline[1]   # deadline value
+
+                    t_value.update([(d_key, d_value)])
+
+                elif tmp.startswith("check_"):
+                    check = tmp.split("==")
+
+                    c_key = check[0]
+                    c_value = check[1]
+
+                    t_value.update([(c_key, c_value)])
+
+                else:
+                    print()
+                    print("DEBUGGER: Corrupt input file.")
+                    sys.exit()
+
+                value.update([(t_key, t_value)])
+
                 dictionary.update([(key, value)])
 
-        return (dictionary)
+        # ==> DEBUGGER
+        # print(dictonary)
+        # <==
+
+        return dictionary
 
     def from_json(self):
         filename = self.filename + '.json'

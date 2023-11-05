@@ -29,6 +29,7 @@ class Task(Project):
         """
 
         my_dict = self.to_dict()     # dictionary for learner's entry
+
         dictionary = self.from_json()     # predefined dictionary (full values)
 
         deadline = int(my_dict[self.project][self.task]["deadline"])
@@ -48,12 +49,19 @@ class Task(Project):
 
         i = 0
         for key, value in my_dict[self.project][self.task].items():
-            if key == "deadline":
+            if key == "deadline" or key == "score":
                 pass
             else:
-                if value == '' or int(value) < 0 or int(value) > 1:
+                if value == '':
+                    # ==> DEBUGGER
+                    print("--")
+                    # <==
+
+                    return "--"
+
+                if int(value) < 0 or int(value) > 1:
                     print()
-                    print("DEBUGGER 6: Empty Value.")
+                    print("DEBUGGER 6: Invalid Value.")
                     sys.exit()
 
                 check += int(value) * int(points[i])
