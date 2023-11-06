@@ -77,4 +77,4 @@ git clone https://github.com/juniorohanyere/alxcalc.git
 
 ## Notice.
 
-> alxcalc is a work in progress, hence, any intructions given here is only the tip of the iceberg of what the program is capable of
+> alxcalc is a work in progress, hence, all intructions seen here is only the tip of the iceberg of what the program is capable of
