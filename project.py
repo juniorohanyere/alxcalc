@@ -6,33 +6,14 @@ from month import Month
 
 
 class Project(Month):
-    def __init__(self, filename=None, args=None):
-        if (len(args) >= 5 and args[3] == '-p' and len(args) <= 7 and
-                len(args) % 2 != 0):
-            super().__init__(filename, args)
-            self.project = self.project_key()
+    def __init__(self, month, project, filename=None, args=None):
+        super().__init__(filename, args)
 
-    """
-        mand_pnt = 0    # obtained mandatory points
-        opt_pnt = 0     # obtained optional points
-        pnt = 0     # total obtained points
+        self.month = month
+        self.project = project
+        self.filename = filename
 
-        total_mand_pnt = 0  # full mandatory points
-        total_opt_pnt = 0   # full optional points
-        total_pnt = 0   # total full points
-
-        for key, value in dictionary[project][task][mandatory].items():
-            total_mand_pnt += int(value)
-
-        try:
-            for key, value in dictionary[project][task][optional].items():
-                total_opt_pnt += int(value)
-        except KeyError:
-            total_opt_pnt = 0
-
-        total_pnt = total_mand_pnt + total_opt_pnt
-    """
-
+    """this method should probably be part of the Main class
     def project_key(self):
         dictionary = self.from_json()
 
@@ -40,9 +21,45 @@ class Project(Month):
             if value['name'] == self.args[4]:
                 return key
 
-        print("Error: No such project for month {}: {}".
-              format(self.month.lstrip('month_'), self.args[4]))
+        print("Error: unrecognized project: {}".format(self.args[4]))
+        print("       in month {}".format(self.month))
         sys.exit()
+    """
 
     def cal_project(self):
-        pass
+        dictionary = self.to_dict()
+        score = 0
+        count = 0
+
+        for key, value in dictionary[self.project].items():
+            if key == 'score':
+                if value != '':
+                    if value.endswith('%') is False:
+                        print()
+                        print("Error: invalid input value")
+                        sys.exit()
+                    try:
+                        score += int(value.rstrip('%'))
+                        return score
+
+                    except ValueError:
+                        print()
+                        print("Error: invalid input value")
+                        sys.exit()
+
+                else:
+                    # compute from tasks
+                    pass
+
+            elif key.startswith('task_'):
+                from task import Task
+
+                task = Task(self.project, key, self.filename, self.args)
+                my_task = task.cal_task()
+                if my_task == '--':
+                    return '--'
+
+                score += my_task
+                count += 1
+
+        my_score = score / count

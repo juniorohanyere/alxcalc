@@ -1,5 +1,7 @@
 # alxcalc.
 
+> The alxcalc project is currently on hold, due to some changes with the ALX programmer, till further notice.
+
 `alxcalc` is a tool that enables `ALX learners` to predict/calculate their expected avarage score for a particular month, project, or task, based on the learners' computation/input.
 
 ## Installation.

@@ -19,10 +19,12 @@ class Calc:
         self.calc()
 
     def calc(self):
-        if isinstance(self.master, Task) is True:
-            print(str(self.master.cal_task()) + "%")
         elif isinstance(self.master, Month) is True:
             print(str(self.master.cal_month()) + "%")
+        elif isinstance(self.master, Project) is True:
+            print(str(self.master.cal_project()) + "%")
+        if isinstance(self.master, Task) is True:
+            print(str(self.master.cal_task()) + "%")
 
             return
 
@@ -31,44 +33,46 @@ class Main:
     def __init__(self, master=None):
         self.master = master
         self.args = sys.argv
+        length = len(self.args)
 
-        if len(self.args) <= 2:
+        if length <= 2:
             print("Usage: alxcalc <option> <value>")
             sys.exit()
 
-        if self.args[1] != "-M" and self.args[1] != "-m":
-            print("Error: Invalid option: {}".format(self.args[1]))
-            sys.exit()
+        if self.args[1] == "-M" or self.args[1] == "-m" :
+            if self.args[2].isdigit() is False:
+                print("Error: Invalid input value for option {}: {}".
+                      format(self.args[1], self.args[2]))
+                print("       Expecting <int>, got <str>")
+                sys.exit()
 
-        if self.args[2].isdigit() is False:
-            print("Error: Invalid input value for option {}: {}".
-                  format(self.args[1], self.args[2]))
-            sys.exit()
+            home = os.environ['HOME']
+            self.filename = '{}/.alxcalc/month_{}/month_{}'.format(home,
+                                                                   self.args[2],
+                                                                   self.args[2])
 
-        home = os.environ['HOME']
-        self.filename = '{}/.alxcalc/month_{}/month_{}'.format(home,
-                                                               self.args[2],
-                                                               self.args[2])
+            try:
+                os.stat(self.filename)
+            except (FileNotFoundError, IsADirectoryError):
+                print("Error: No such month in the ALX calendar: {}".
+                      format(self.args[2]))
+                sys.exit()
+
+            subprocess.run(f'editor {self.filename}', shell=True, text=True)
 
     def main(self):
         """Entry point.
         """
-
-        try:
-            os.stat(self.filename)
-        except (FileNotFoundError, IsADirectoryError):
-            print("DEBUGGER 4: File Not Found")
-            sys.exit()
-
-        if self.args[1] == "-M":
-            subprocess.run(f'editor {self.filename}', shell=True, text=True)
-
 
         length = len(self.args)
 
         if length == 3:
             month = Month(self.filename, self.args)
             self.master = month
+        elif length == 5:
+            if self.args[3] == '-p':
+                project = Project(self.filename, self.args)
+                self.master = project
         elif length == 7 and self.args[5] == '-t':
             if self.args[6].isdigit() is False:
                 print("Error: Invalid Input Value for {}: {}".

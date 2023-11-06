@@ -17,7 +17,7 @@ class Month(Base):
 
         super().__init__(filename, args)
 
-        self.month = "month_" + self.args[2]
+        self.month = self.args[2]
 
     def cal_month(self):
         """calculate and compute the sccore for a given month
@@ -29,33 +29,15 @@ class Month(Base):
         t_count = 0
 
         for key, value in dictionary.items():
-            for k, v in value.items():
-                if k == 'score':
-                    if v != '':
-                        if v.endswith('%') is False:
-                            print()
-                            print("Error: Invalid Input Value.")
-                            sys.exit()
-                        try:
-                            score += int(v.rstrip('%'))
-                            break
-                        except ValueError:
-                            print()
-                            print("Error: Invalid Input Value.")
-                            sys.exit()
-                    else:
-                        # compute from task
-                        pass
+            from project import Project
 
-                elif k.startswith('task_'):
-                    from task import Task
+            project = Project(self.month, key, self.filename, self.args)
+            my_project = project.cal_project()
+            if my_project == '--':
+                return '--'
 
-                    t_count += 1
-                    task = Task(key, k, self.filename, self.args)
-                    my_task = task.cal_task()
-                    if my_task != '--':
-                        score += my_task
-                        break
+            score += my_project * weight    # weight of the project
 
-        m_score = score / 2
+        m_score = score / total_weight # total_weight
+
         return (m_score)
