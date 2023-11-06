@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-$PWD/alxcalc.py "$@"
+$HOME/alxcalc/alxcalc.py "$@"
