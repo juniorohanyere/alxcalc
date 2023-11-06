@@ -1,6 +1,6 @@
 # makefile for alxcalc
 
-BIN_PATH = /usr/bin
+BIN_PATH = /usr/local/bin
 
 DIR = $(HOME)/.alxcalc
 
