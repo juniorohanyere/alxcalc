@@ -33,7 +33,7 @@ class Main:
         self.args = sys.argv
 
         if len(self.args) <= 2:
-            print("Usage: {} <option> <value>".format(self.args[0]))
+            print("Usage: alxcalc <option> <value>")
             sys.exit()
 
         if self.args[1] != "-M" and self.args[1] != "-m":

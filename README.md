@@ -12,6 +12,10 @@ git clone https://github.com/juniorohanyere/alxcalc.git
 
 **Getting Started:**
 
+Like a tree, a user can choose to input values based on project score, task score, or checker status (whether a check is green or not) while taking note of the deadline space where necessary. A project score input should be either an integer or floating point value terminated with the percentage `%` sign. A task score input should aslo be either an integer or floating point value, terminated with the percentage `%` sign as well. To calculate scores based on checker status, the user has to specify a deadline. The deadline value is an integer value between `0` (inclusive) and `2` (inclusive). `0` denotes *before end of first deadline*, `1` denotes *before end of second deadline*, and `2` denotes *after end of second deadline*. A check value (checker status) should be an integer value of either `0` or `1`, **like a binary switch,** yeah, funny. `0` denotes a `green check`, `1` denotes a `red check`. Mandatory or optional task is managed or preset by the program, so a user don't have to provide this input.
+In all, the format for each label/field in the input file is **<label>==<value>**, no spaces between. Empty lines are also vital. A user is only expected to input values where appropriate, otherwise, the program stands a chance of producing inaccurate results.
+
+
 ```bash
 ./alxcalc   # brief introduction + developer's name + version number
 ```

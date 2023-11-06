@@ -17,4 +17,4 @@ all: $(TARGET)
 $(TARGET): $(SRCS) $(DEPS) $(JSON)
 	sudo cp alxcalc.sh $(BIN_PATH)/alxcalc
 	mkdir -p $(DIR)
-	cp -r * $(DIR)
+	cp * -r $(DIR)
