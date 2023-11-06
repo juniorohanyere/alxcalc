@@ -20,7 +20,9 @@ class Calc:
 
     def calc(self):
         if isinstance(self.master, Task) is True:
-            self.master.cal_task()
+            print(str(self.master.cal_task()) + "%")
+        elif isinstance(self.master, Month) is True:
+            print(str(self.master.cal_month()) + "%")
 
             return
 
@@ -43,7 +45,10 @@ class Main:
                   format(self.args[1], self.args[2]))
             sys.exit()
 
-        self.filename = 'month_{}/month_{}'.format(self.args[2], self.args[2])
+        home = os.environ['HOME']
+        self.filename = '{}/.alxcalc/month_{}/month_{}'.format(home,
+                                                               self.args[2],
+                                                               self.args[2])
 
     def main(self):
         """Entry point.
@@ -58,12 +63,42 @@ class Main:
         if self.args[1] == "-M":
             subprocess.run(f'editor {self.filename}', shell=True, text=True)
 
-        month = Month(self.filename, self.args)
-        project = Project(self.filename, self.args)
-        task = Task(self.filename, self.args)
 
-        if len(self.args) == 7:
-            self.master = task
+        length = len(self.args)
+
+        if length == 3:
+            month = Month(self.filename, self.args)
+            self.master = month
+        elif length == 7 and self.args[5] == '-t':
+            if self.args[6].isdigit() is False:
+                print("Error: Invalid Input Value for {}: {}".
+                      format(self.args[5], self.args[6]))
+                sys.exit()
+            if self.args[3] != '-p':
+                print()
+                print("Error: Invalid Syntax")
+                sys.exit()
+            if self.args[1] != '-m' and self.args[1] != '-M':
+                print()
+                print("Error: Invalid Syntax.")
+                sys.exit()
+            if self.args[2].isdigit() is False:
+                print()
+                print("Error: Invalid Input Value")
+                sys.exit()
+
+            month = "month_" + self.args[2]
+
+            project = Project(self.filename, self.args)
+            project = project.project_key()
+
+            task = "task_" + self.args[6]
+
+            filename = self.filename
+
+            my_task = Task(project, task, filename, self.args)
+            self.master = my_task
+
         else:
             self.master = None
 

@@ -99,7 +99,7 @@ class Base:
                 dictionary.update([(key, value)])
 
         # ==> DEBUGGER
-        # print(dictonary)
+        # print(dictionary)
         # <==
 
         return dictionary
